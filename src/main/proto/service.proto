@@ -1,0 +1,38 @@
+syntax = "proto2";
+
+package nkg.example;
+option java_package = 'nkg.example.service';
+
+option java_outer_classname = "kvService";
+option java_multiple_files = true;
+
+service KVService {
+    rpc Put (Put.Request) returns (Put.Response);
+    rpc Get (Get.Request) returns (Get.Response);
+}
+
+message Entry {
+    required string key = 1;
+    required string value = 2;
+}
+
+message Put {
+    message Request {
+        repeated Entry pairs = 1;
+    }
+
+    message Response {
+        required bool success = 1;
+        optional string error = 2;
+    }
+}
+
+message Get {
+    message Request {
+        repeated string keys = 1;
+    }
+
+    message Response {
+        repeated Entry values = 1;
+    }
+}

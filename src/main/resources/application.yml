@@ -1,0 +1,42 @@
+server:
+  port: 8081
+
+kafka:
+  bootstrap-servers: localhost:9092
+
+kv-service:
+  thread-count: 4
+
+grpc:
+  port: 9999
+  grpc-thread-count: 4
+
+kv-store:
+  evictable-cache:
+    max-size: 1000
+    ttl-ms: 10000
+  transferring-buffer:
+    max-cache-size: 50000
+
+management:
+  server:
+    port: 8081
+  metrics:
+    export:
+      jmx:
+        enabled: true
+        domain: nkg.example.metrics
+      statsd:
+        enabled: true
+        host: localhost
+        port: 8125
+        flavor: telegraf
+
+  endpoint:
+    metrics:
+      enabled: true
+
+  endpoints:
+    web:
+      exposure:
+        include: '*'
