@@ -26,7 +26,9 @@ jobs:
         run: sudo apt install docker.io gradle
 
       - name: cd to repo
-        run: cd /home/runner/work/skywalking-grpc-test/skywalking-grpc-test
+        run: |
+          cd /home/runner/work/skywalking-grpc-test/skywalking-grpc-test
+          ls -al
 
       - name: Run gradle build
         run: gradle build
