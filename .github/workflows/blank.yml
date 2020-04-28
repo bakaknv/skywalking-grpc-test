@@ -24,8 +24,6 @@ jobs:
 
       - name: Installing docker
         run: |
-          sudo apt -y install default-jdk
-          sudo apt -y install vim apt-transport-https dirmngr wget software-properties-common
           sudo add-apt-repository ppa:cwchien/gradle
           sudo apt-get update
           sudo apt -y install gradle docker.io
