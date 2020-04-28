@@ -93,3 +93,4 @@ gradle-app.setting
 hs_err_pid*
 
 /data
+!/gradle/wrapper/gradle-wrapper.jar
