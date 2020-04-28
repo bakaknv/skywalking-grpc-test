@@ -3,8 +3,6 @@ package nkg.example.service.dao
 import com.aerospike.client.BatchRead
 import com.aerospike.client.Bin
 import com.aerospike.client.Key
-import com.aerospike.client.async.EventLoops
-import com.github.aalobaidi.aerospike.reactor.AerospikeReactorClient
 import com.google.common.cache.CacheBuilder
 import kotlinx.coroutines.reactive.awaitFirst
 import java.util.*
@@ -29,8 +27,7 @@ private const val KVValueBin = "val-bin"
 
 class KVCachedStorageImpl(
     cacheProperties: KVEvictableCacheProperties,
-    private val eventLoops: EventLoops,
-    private val aerospikeClient: AerospikeReactorClient,
+    private val aerospikeClientFactory: AerospikeClientFactory,
     private val kvStoreTransferringBuffer: KVStoreTransferringBuffer
 ) : KVCachedStorageAccessor, KVCachedStoragePersister {
 
@@ -38,6 +35,10 @@ class KVCachedStorageImpl(
         .expireAfterAccess(cacheProperties.ttlMs, TimeUnit.MILLISECONDS)
         .maximumSize(cacheProperties.maxSize)
         .build<String, String>()
+
+    private val eventLoops = aerospikeClientFactory.eventLoops()
+
+    private val aerospikeClient by lazy { aerospikeClientFactory.createClient() }
 
     override suspend fun get(keys: Collection<String>): Map<String, String> {
         return getFromTwoSources(keys, { cache.getIfPresent(it) }) { getFromStorage(it) }

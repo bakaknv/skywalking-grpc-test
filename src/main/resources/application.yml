@@ -7,6 +7,7 @@ kafka:
 kv-service:
   thread-count: 4
 
+
 grpc:
   port: 9999
   grpc-thread-count: 4
@@ -40,3 +41,7 @@ management:
     web:
       exposure:
         include: '*'
+
+aerospike:
+  host: "localhost"
+  port: 3000

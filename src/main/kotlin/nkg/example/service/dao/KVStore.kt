@@ -1,5 +1,6 @@
 package nkg.example.service.dao
 
+import io.micrometer.core.instrument.MeterRegistry
 import nkg.example.service.Entry
 import nkg.example.service.Get
 import nkg.example.service.Put
@@ -11,8 +12,11 @@ interface KVStore {
 
 class KVStoreImpl(
     private val kvStoreTransferringBuffer: KVStoreTransferringBuffer,
-    private val kvCachedStorageAccessor: KVCachedStorageAccessor
+    private val kvCachedStorageAccessor: KVCachedStorageAccessor,
+    meterRegistry: MeterRegistry
 ) : KVStore {
+    private val counter = meterRegistry.counter("kv-read")
+
     override suspend fun put(pairs: Put.Request): Put.Response {
         try {
             kvStoreTransferringBuffer.acquireSlotAndPut(pairs) ?: return error("try again later")
@@ -27,6 +31,8 @@ class KVStoreImpl(
             { kvStoreTransferringBuffer.get(it) }) { kvCachedStorageAccessor.get(it) }
 
         val entries = result.entries.map { entry(it.key, it.value) }
+
+        counter.increment(request.keysCount.toDouble())
         return Get.Response.newBuilder().addAllValues(entries).build()
     }
 

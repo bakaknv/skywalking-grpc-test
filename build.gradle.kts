@@ -10,6 +10,7 @@ plugins {
     id("org.springframework.boot") version "2.2.6.RELEASE"
     id("io.spring.dependency-management") version "1.0.9.RELEASE"
     id("com.google.protobuf") version "0.8.8"
+    id("com.google.cloud.tools.jib") version "1.8.0"
     kotlin("jvm") version "1.3.71"
     kotlin("kapt") version "1.3.71"
     kotlin("plugin.spring") version "1.3.71"
@@ -21,8 +22,12 @@ version = "1.0-SNAPSHOT"
 java.sourceCompatibility = JavaVersion.VERSION_11
 
 repositories {
+    maven {
+        setUrl("https://plugins.gradle.org/m2/")
+    }
     mavenCentral()
 }
+apply(plugin = "com.google.cloud.tools.jib")
 
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
@@ -50,7 +55,12 @@ dependencies {
     implementation(group = "com.aerospike", name = "aerospike-client", version = "4.1.5")
     implementation(group = "io.netty", name = "netty-all", version = "4.1.22.Final")
 
-
+    compileClasspath(group = "org.springframework.boot", name = "spring-boot-gradle-plugin", version = "2.2.6.RELEASE")
+    compileClasspath(
+        group = "com.google.cloud.tools.jib",
+        name = "com.google.cloud.tools.jib.gradle.plugin",
+        version = "1.8.0"
+    )
 
     testImplementation(group = "com.nhaarman.mockitokotlin2", name = "mockito-kotlin", version = "2.2.0")
     testImplementation(group = "org.junit.jupiter", name = "junit-jupiter", version = "5.6.2")

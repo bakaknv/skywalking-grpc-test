@@ -35,13 +35,12 @@ class KVStoreConfiguration(
     fun kvCachedStorage() =
         KVCachedStorageImpl(
             kvEvictableCacheProperties(),
-            aerospikeConfiguration.eventLoops(),
-            aerospikeConfiguration.aerospikeClient(),
+            aerospikeConfiguration.aerospikeClientFactory(),
             kvStoreTransferringBuffer()
         )
 
     @Bean
-    fun kvStore(): KVStore = KVStoreImpl(kvStoreTransferringBuffer(), kvCachedStorage())
+    fun kvStore(): KVStore = KVStoreImpl(kvStoreTransferringBuffer(), kvCachedStorage(), meterRegistry)
 
     @Bean
     fun kvStoreKafkaReader() =

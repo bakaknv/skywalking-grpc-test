@@ -15,12 +15,13 @@ services:
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper-kv:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_LISTENERS: PLAINTEXT://localhost:9092,FROM_DOCKER://kafka-kv:9094
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,FROM_DOCKER://kafka-kv:9094
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,FROM_DOCKER:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
 
-  aerospike:
+  aerospike-kv:
     image: aerospike/aerospike-server
     ports:
       - 3000:3000
@@ -82,3 +83,17 @@ services:
       - influxdb
     ports:
       - "9099:9092"
+
+  kv-service:
+    image: skywalking-grpc-test:1.0-SNAPSHOT
+    links:
+      - kafka-kv
+      - aerospike-kv
+    ports:
+      - 8081:8081
+      - 9999:9999
+    environment:
+      JAVA_TOOL_OPTIONS:  '-agentlib:jdwp=transport=dt_socket,address=5005,server=y,suspend=n
+                          -Dkafka.bootstrap-servers=FROM_DOCKER://kafka-kv:9094
+                          -Daerospike.host=aerospike-kv
+                          -Dmanagement.metrics.export.statsd.host=telegraf'
