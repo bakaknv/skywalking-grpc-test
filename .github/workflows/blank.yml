@@ -23,7 +23,12 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Installing docker
-        run: sudo apt install docker.io gradle
+        run: |
+        sudo apt -y install default-jdk
+        sudo apt -y install vim apt-transport-https dirmngr wget software-properties-common
+        sudo add-apt-repository ppa:cwchien/gradle
+        sudo apt-get update
+        sudo apt -y install gradle docker.io
 
       - name: cd to repo
         run: |
